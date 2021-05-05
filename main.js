@@ -1,38 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import { TasksCollection } from '/imports/db/TasksCollection';
-import '/imports/api/tasksMethods';
-import '/imports/api/tasksPublications';
+import assert from "assert";
 
-const insertTask = (taskText, user) =>
-  TasksCollection.insert({
-    text: taskText,
-    userId: user._id,
-    createdAt: new Date(),
+describe("simple-todos-react", function () {
+  it("package.json has correct name", async function () {
+    const { name } = await import("../package.json");
+    assert.strictEqual(name, "simple-todos-react");
   });
 
-const SEED_USERNAME = 'meteorite';
-const SEED_PASSWORD = 'password';
-
-Meteor.startup(() => {
-  if (!Accounts.findUserByUsername(SEED_USERNAME)) {
-    Accounts.createUser({
-      username: SEED_USERNAME,
-      password: SEED_PASSWORD,
+  if (Meteor.isClient) {
+    it("client is not server", function () {
+      assert.strictEqual(Meteor.isServer, false);
     });
   }
 
-  const user = Accounts.findUserByUsername(SEED_USERNAME);
-
-  if (TasksCollection.find().count() === 0) {
-    [
-      'First Task',
-      'Second Task',
-      'Third Task',
-      'Fourth Task',
-      'Fifth Task',
-      'Sixth Task',
-      'Seventh Task',
-    ].forEach(taskText => insertTask(taskText, user));
+  if (Meteor.isServer) {
+    it("server is not client", function () {
+      assert.strictEqual(Meteor.isClient, false);
+    });
   }
 });
